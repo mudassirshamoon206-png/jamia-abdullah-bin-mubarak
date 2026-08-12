@@ -1,0 +1,50 @@
+:root {
+  --primary-color: #0f4c3a; /* Deep Islamic Green */
+  --secondary-color: #d4af37; /* Metallic Gold */
+  --accent-color: #e6b800; /* Bright Gold */
+  --background-light: #f8f9fa;
+  --background-dark: #121212;
+  --text-dark: #333333;
+  --text-light: #ffffff;
+  --border-color: #e0e0e0;
+  
+  --font-family-en: 'Inter', 'Roboto', sans-serif;
+  --font-family-ur: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif;
+  --font-family-ar: 'Amiri', 'Noto Naskh Arabic', serif;
+}
+
+html[lang='en'] {
+  font-family: var(--font-family-en);
+}
+
+html[lang='ur'] {
+  font-family: var(--font-family-ur);
+}
+
+html[lang='ar'] {
+  font-family: var(--font-family-ar);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-light);
+  color: var(--text-dark);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Islamic Geometric Patterns Base */
+.geometric-bg {
+  background-image: url('/geometric-pattern.svg'); /* To be mapped to assets */
+  background-repeat: repeat;
+  background-size: 200px;
+  opacity: 0.05;
+}

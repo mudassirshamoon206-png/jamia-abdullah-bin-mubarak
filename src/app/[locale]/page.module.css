@@ -1,0 +1,278 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--background-light);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section {
+  padding: 5rem 0;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2.25rem;
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 3px;
+  background-color: var(--secondary-color);
+  border-radius: 2px;
+}
+
+[dir="rtl"] .sectionTitle::after {
+  left: 50%;
+  right: auto;
+}
+
+/* About Box */
+.aboutBox {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border-top: 4px solid var(--secondary-color);
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.aboutText {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--text-dark);
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}
+
+.ctaLink {
+  color: var(--primary-color);
+  font-weight: bold;
+  text-decoration: underline;
+  font-size: 1.05rem;
+}
+
+/* Announcements Grid */
+.announcementsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.annCard {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border-inline-start: 4px solid var(--secondary-color);
+}
+
+.annDate {
+  font-size: 0.85rem;
+  color: #888;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.annCard h3 {
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.annCard p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-dark);
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* News Grid */
+.newsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+}
+
+.newsCard {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.newsImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.newsContent {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.newsDate {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.newsContent h3 {
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.newsContent p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-dark);
+  opacity: 0.8;
+  margin: 0;
+}
+
+/* Gallery Grid */
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.galleryItem {
+  position: relative;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.galleryImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.galleryItem:hover .galleryImage {
+  transform: scale(1.05);
+}
+
+/* Donations Banner */
+.donationsBanner {
+  background-color: var(--primary-color);
+  color: white;
+  text-align: center;
+  padding: 5rem 1.5rem;
+  border-top: 4px solid var(--secondary-color);
+  border-bottom: 4px solid var(--secondary-color);
+}
+
+.donationsBanner h2 {
+  font-size: 2.25rem;
+  color: var(--secondary-color);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.donationsBanner p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.9;
+}
+
+.donationBtn {
+  display: inline-block;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  padding: 1rem 2.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.donationBtn:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-2px);
+}
+
+/* Contact Grid */
+.contactDetailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.contactCard {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border-top: 4px solid var(--primary-color);
+}
+
+.contactCard h3 {
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.contactCard p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.inlineLink {
+  color: var(--primary-color);
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 3rem 0;
+  }
+
+  .sectionTitle {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .contactDetailsGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

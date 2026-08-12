@@ -1,0 +1,159 @@
+/* DonationStrip.module.css
+   A professional, full-width donation/support strip that matches the
+   existing Jamia color scheme and works on mobile + RTL.
+*/
+
+.strip {
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    #0d3d2e 50%,
+    #112e23 100%
+  );
+  border-top: 3px solid var(--secondary-color);
+  border-bottom: 3px solid var(--secondary-color);
+  padding: 2rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle geometric shimmer overlay */
+.strip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(212, 175, 55, 0.04) 0px,
+    rgba(212, 175, 55, 0.04) 1px,
+    transparent 1px,
+    transparent 12px
+  );
+  pointer-events: none;
+}
+
+.inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.accentLeft,
+.accentRight {
+  color: var(--secondary-color);
+  font-size: 1.25rem;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.textGroup {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  color: var(--secondary-color);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  line-height: 1.4;
+}
+
+.desc {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 50px;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+  flex-shrink: 0;
+}
+
+.btn:hover {
+  background-color: #e6c84a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btnIcon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* ── Mobile ── */
+@media (max-width: 700px) {
+  .strip {
+    padding: 1.5rem 1rem;
+  }
+
+  .inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.25rem;
+  }
+
+  .accentLeft,
+  .accentRight {
+    display: none;
+  }
+
+  .title {
+    font-size: 1.15rem;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem 1.5rem;
+  }
+}
+
+/* ── RTL (Urdu / Arabic) ── */
+[dir="rtl"] .inner {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .textGroup {
+  text-align: right;
+}
+
+[dir="rtl"] .btn {
+  flex-direction: row-reverse;
+}
+
+@media (max-width: 700px) {
+  [dir="rtl"] .inner {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  [dir="rtl"] .textGroup {
+    text-align: center;
+  }
+}
