@@ -4,14 +4,19 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  NODE_OPTIONS = "--max-old-space-size=4096"
+  NPM_FLAGS = "--legacy-peer-deps"
+  NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSyAk_M5fkYdXhjynWvKWGlPek_2Za90ZIB4"
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = "markaz-abdullah-bin-mubarak.firebaseapp.com"
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID = "markaz-abdullah-bin-mubarak"
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = "markaz-abdullah-bin-mubarak.firebasestorage.app"
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "254933105084"
+  NEXT_PUBLIC_FIREBASE_APP_ID = "1:254933105084:web:6697047e3ee1fe33efd3b9"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Ensure all routes are handled by Next.js SSR
 [[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/___netlify-handler"
-  status = 200
-  force = false
+  from = "/"
+  to = "/en"
+  status = 301
+  force = true

@@ -83,7 +83,3 @@ logs/
 
 # ── Deployment platforms ─────────────────────────────────────
 .vercel
-
-# ── Local scripts (may contain credentials) ──────────────────
-dopush.bat
-*.bat
