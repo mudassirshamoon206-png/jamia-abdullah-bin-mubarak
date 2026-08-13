@@ -98,3 +98,14 @@ export const getCoursesByDepartment = async (departmentId: string): Promise<Cour
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Course));
 };
+
+export const getCourses = async (): Promise<Course[]> => {
+  const querySnapshot = await getDocs(collection(db, "courses"));
+  const allCourses = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Course));
+  return allCourses
+    .sort((a, b) => {
+      const aTime = a.createdAt?.seconds ?? 0;
+      const bTime = b.createdAt?.seconds ?? 0;
+      return bTime - aTime;
+    });
+};

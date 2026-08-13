@@ -1,0 +1,174 @@
+.page {
+  background-color: var(--background-light);
+  min-height: 100vh;
+}
+
+.pageHeader {
+  height: 300px;
+  background-image: url('/header-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  background-color: rgba(0, 51, 35, 0.75);
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pageHeader h1 {
+  color: white;
+  font-size: 3rem;
+  z-index: 1;
+}
+
+.container {
+  max-width: 1200px;
+  margin: -40px auto 40px auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.section {
+  background: white;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2.2rem;
+  color: var(--primary-color);
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background-color: var(--secondary-color);
+  border-radius: 2px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+  border-color: var(--secondary-color);
+}
+
+.imageContainer {
+  height: 250px;
+  width: 100%;
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  font-size: 5rem;
+  opacity: 0.2;
+}
+
+.cardContent {
+  padding: 1.5rem;
+  text-align: center;
+  flex: 1;
+}
+
+.cardContent h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.3rem;
+  color: var(--primary-color);
+}
+
+.designation {
+  color: var(--secondary-color);
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 1rem !important;
+}
+
+.cardContent p {
+  color: var(--text-dark);
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+  opacity: 0.8;
+}
+
+.cardContent a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.cardContent a:hover {
+  text-decoration: underline;
+  color: var(--secondary-color);
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+  padding: 2rem;
+}
+
+.noData {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #999;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .pageHeader h1 {
+    font-size: 2.2rem;
+  }
+  .container {
+    padding: 0 1rem;
+    margin-top: -20px;
+  }
+  .section {
+    padding: 2rem 1rem;
+  }
+}

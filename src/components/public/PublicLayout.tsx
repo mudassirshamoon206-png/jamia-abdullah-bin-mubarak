@@ -3,7 +3,7 @@
 import { usePathname } from "@/i18n/routing";
 import Header from "./Header";
 import FloatingContact from "./FloatingContact";
-import FloatingDonate from "./FloatingDonate";
+import FloatingActions from "./FloatingActions";
 import Footer from "./Footer";
 import { ReactNode } from "react";
 
@@ -22,8 +22,8 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
       <div className="public-content">
         {children}
       </div>
+      <FloatingActions />
       <FloatingContact />
-      <FloatingDonate />
       <Footer />
     </div>
   );

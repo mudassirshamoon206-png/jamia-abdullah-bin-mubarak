@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { useLocale } from "next-intl";
-import styles from "../about/page.module.css";
+import styles from "../courses/page.module.css";
 
 export default function EventsPage() {
   const locale = useLocale();
@@ -14,7 +14,6 @@ export default function EventsPage() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        // No orderBy — avoids composite index requirement. Sort client-side.
         const snap = await getDocs(collection(db, "events"));
         const items = snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
         items.sort((a: any, b: any) => {
@@ -39,29 +38,21 @@ export default function EventsPage() {
     return item.titleEn || item.title || "";
   };
 
-  const getDescription = (item: any) => {
+  const getContent = (item: any) => {
     if (locale === "ur" && item.descUr) return item.descUr;
     if (locale === "ar" && item.descAr) return item.descAr;
-    return item.descEn || item.description || item.content || "";
-  };
-
-  const getLocation = (item: any) => {
-    if (locale === "ur" && item.locationUr) return item.locationUr;
-    if (locale === "ar" && item.locationAr) return item.locationAr;
-    return item.locationEn || item.location || "";
+    return item.descEn || item.description || "";
   };
 
   const pageTitle =
-    locale === "ur" ? "آنے والے پروگرام" : locale === "ar" ? "الفعاليات القادمة" : "Upcoming Events";
+    locale === "ur" ? "تقریبات اور اعلانات" : locale === "ar" ? "الفعاليات والإعلانات" : "Events & Announcements";
   const loadingText =
-    locale === "ur" ? "پروگرام لوڈ ہو رہے ہیں..." : locale === "ar" ? "جاري التحميل..." : "Loading events...";
+    locale === "ur" ? "تقریبات لوڈ ہو رہی ہیں..." : locale === "ar" ? "جاري التحميل..." : "Loading events...";
   const emptyText =
-    locale === "ur" ? "ابھی تک کوئی پروگرام نہیں ملا۔" : locale === "ar" ? "لا توجد فعاليات حتى الآن." : "No upcoming events found.";
-  const locationLabel =
-    locale === "ur" ? "مقام" : locale === "ar" ? "الموقع" : "Location";
+    locale === "ur" ? "ابھی تک کوئی تقریب دستیاب نہیں۔" : locale === "ar" ? "لا توجد فعاليات متاحة حتى الآن." : "No events available at the moment.";
 
   return (
-    <main className={styles.aboutPage}>
+    <main className={styles.page}>
       <header className={styles.pageHeader}>
         <div className={styles.overlay}>
           <h1>{pageTitle}</h1>
@@ -69,31 +60,32 @@ export default function EventsPage() {
       </header>
 
       <div className={styles.container}>
-        {loading ? (
-          <div className={styles.introSection}><p>{loadingText}</p></div>
-        ) : (
-          <div className={styles.missionVision}>
-            {events.length === 0 && (
-              <div className={styles.card}>
-                <p>{emptyText}</p>
-              </div>
-            )}
-            {events.map(item => (
-              <div key={item.id} className={styles.card}>
-                <h3>{getTitle(item)}</h3>
-                {item.date && (
-                  <p style={{ fontSize: "0.85rem", color: "var(--secondary-color)", fontWeight: "bold" }}>
-                    {item.date} {item.time && `· ${item.time}`}
-                  </p>
-                )}
-                {getLocation(item) && (
-                  <p style={{ fontSize: "0.9rem" }}><strong>{locationLabel}:</strong> {getLocation(item)}</p>
-                )}
-                <p>{getDescription(item)}</p>
-              </div>
-            ))}
-          </div>
-        )}
+        <section className={styles.section}>
+          {loading ? (
+            <p className={styles.loading}>{loadingText}</p>
+          ) : events.length === 0 ? (
+            <p className={styles.noData}>{emptyText}</p>
+          ) : (
+            <div className={styles.grid}>
+              {events.map(item => (
+                <div key={item.id} className={styles.card}>
+                  <div className={styles.cardContent}>
+                    <h3>{getTitle(item)}</h3>
+                    <div style={{ color: "var(--secondary-color)", fontWeight: "bold", marginBottom: "1rem" }}>
+                       {item.date} {item.time && `| ${item.time}`}
+                    </div>
+                    <p>{getContent(item)}</p>
+                    {item.location && (
+                      <p style={{ fontSize: "0.85rem", marginTop: "1rem" }}>
+                        <strong>Location:</strong> {item.location}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </main>
   );

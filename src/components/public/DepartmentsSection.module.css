@@ -65,10 +65,11 @@
 .patternPlaceholder {
   width: 100%;
   height: 100%;
-  background-image: url('/geometric-pattern.svg');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.1;
+  background: linear-gradient(135deg, var(--primary-color), #045c40);
+  opacity: 0.15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cardContent {

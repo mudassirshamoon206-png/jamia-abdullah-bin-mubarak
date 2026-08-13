@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { useLocale } from "next-intl";
-import styles from "../about/page.module.css";
+import styles from "../courses/page.module.css";
 
 export default function NewsPage() {
   const locale = useLocale();
@@ -14,7 +14,6 @@ export default function NewsPage() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        // No orderBy — avoids composite index requirement. Sort client-side.
         const snap = await getDocs(collection(db, "news"));
         const items = snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
         items.sort((a: any, b: any) => {
@@ -53,7 +52,7 @@ export default function NewsPage() {
     locale === "ur" ? "ابھی تک کوئی خبر نہیں ملی۔" : locale === "ar" ? "لا توجد أخبار حتى الآن." : "No news articles found.";
 
   return (
-    <main className={styles.aboutPage}>
+    <main className={styles.page}>
       <header className={styles.pageHeader}>
         <div className={styles.overlay}>
           <h1>{pageTitle}</h1>
@@ -61,31 +60,36 @@ export default function NewsPage() {
       </header>
 
       <div className={styles.container}>
-        {loading ? (
-          <div className={styles.introSection}><p>{loadingText}</p></div>
-        ) : (
-          <div className={styles.missionVision}>
-            {news.length === 0 && (
-              <div className={styles.card}>
-                <p>{emptyText}</p>
-              </div>
-            )}
-            {news.map(item => (
-              <div key={item.id} className={styles.card}>
-                {item.imageUrl && (
-                  <img src={item.imageUrl} alt={getTitle(item)} style={{ width: "100%", height: "200px", objectFit: "cover", borderRadius: "4px", marginBottom: "1rem" }} />
-                )}
-                <h3>{getTitle(item)}</h3>
-                {item.createdAt && (
-                  <p style={{ fontSize: "0.85rem", color: "gray" }}>
-                    {new Date(item.createdAt.seconds * 1000).toLocaleDateString()}
-                  </p>
-                )}
-                <p>{getContent(item)}</p>
-              </div>
-            ))}
-          </div>
-        )}
+        <section className={styles.section}>
+          {loading ? (
+            <p className={styles.loading}>{loadingText}</p>
+          ) : news.length === 0 ? (
+            <p className={styles.noData}>{emptyText}</p>
+          ) : (
+            <div className={styles.grid}>
+              {news.map(item => (
+                <div key={item.id} className={styles.card}>
+                  {item.imageUrl ? (
+                    <div className={styles.imageContainer}>
+                      <img src={item.imageUrl} alt={getTitle(item)} className={styles.image} />
+                    </div>
+                  ) : (
+                    <div className={styles.imageContainer} style={{ background: 'var(--primary-color)', opacity: 0.1 }} />
+                  )}
+                  <div className={styles.cardContent}>
+                    <h3>{getTitle(item)}</h3>
+                    {item.createdAt && (
+                      <p style={{ fontSize: "0.85rem", color: "gray", marginTop: "-0.5rem", marginBottom: "0.5rem" }}>
+                        {new Date(item.createdAt.seconds * 1000).toLocaleDateString()}
+                      </p>
+                    )}
+                    <p>{getContent(item)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </main>
   );

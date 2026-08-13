@@ -55,6 +55,20 @@ export default function Header() {
     { href: "/contact", label: t("contact") },
   ];
 
+  // Prevent scrolling when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [mobileMenuOpen]);
+
+  const [langOpen, setLangOpen] = useState(false);
+
   return (
     <header className={styles.header}>
       <div className={styles.container}>
@@ -78,17 +92,27 @@ export default function Header() {
             ))}
           </nav>
 
-          <div className={styles.langSwitcher}>
-            <button onClick={() => switchLanguage("en")} className={locale === "en" ? styles.activeLang : ""}>English</button>
-            <span className={styles.divider}>|</span>
-            <button onClick={() => switchLanguage("ur")} className={locale === "ur" ? styles.activeLang : ""}>اردو</button>
-            <span className={styles.divider}>|</span>
-            <button onClick={() => switchLanguage("ar")} className={locale === "ar" ? styles.activeLang : ""}>العربية</button>
+          <div className={styles.langContainer}>
+            <button 
+              className={styles.langToggle} 
+              onClick={() => setLangOpen(!langOpen)}
+              aria-label="Switch Language"
+            >
+              {locale === "en" ? "EN" : locale === "ur" ? "اردو" : "ع"}
+            </button>
+            
+            {langOpen && (
+              <div className={styles.langDropdown}>
+                <button onClick={() => { switchLanguage("en"); setLangOpen(false); setMobileMenuOpen(false); }} className={locale === "en" ? styles.activeLang : ""}>English</button>
+                <button onClick={() => { switchLanguage("ur"); setLangOpen(false); setMobileMenuOpen(false); }} className={locale === "ur" ? styles.activeLang : ""}>اردو</button>
+                <button onClick={() => { switchLanguage("ar"); setLangOpen(false); setMobileMenuOpen(false); }} className={locale === "ar" ? styles.activeLang : ""}>العربية</button>
+              </div>
+            )}
           </div>
         </div>
 
         <button 
-          className={styles.hamburger} 
+          className={`${styles.hamburger} ${mobileMenuOpen ? styles.hamburgerOpen : ""}`} 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle Menu"
         >

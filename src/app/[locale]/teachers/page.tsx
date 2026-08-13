@@ -4,153 +4,124 @@ import { useEffect, useState } from "react";
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { useLocale } from "next-intl";
-import styles from "../about/page.module.css";
+import styles from "./page.module.css";
 
 export default function TeachersPage() {
-  const locale = useLocale();
-  const [teachers, setTeachers] = useState<any[]>([]);
+  const locale = useLocale() as "ur" | "ar" | "en";
+  const [leadership, setLeadership] = useState<any[]>([]);
+  const [faculty, setFaculty] = useState<any[]>([]);
+  const [staff, setStaff] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const defaultLeaders = [
-    {
-      name: "Mufti Azhar-ul-Haq",
-      nameUr: "مفتی اظہر الحق",
-      nameAr: "مفتي أظهر الحق",
-      designation: "Director",
-      designationUr: "ڈائریکٹر",
-      designationAr: "المدير",
-      phone: "0300-8751075",
-      specialization: "Islamic Jurisprudence / Fiqh"
-    },
-    {
-      name: "Muhammad Tayyab Mahmood",
-      nameUr: "محمد طیب محمود",
-      nameAr: "محمد طيب محمود",
-      designation: "Director / Administration",
-      designationUr: "ڈائریکٹر / انتظامیہ",
-      designationAr: "المدير / الإدارة",
-      phone: "0303-7516220",
-      specialization: "Islamic Administration & Education Management"
-    },
-    {
-      name: "Rana Muhammad Khalil Ahmad",
-      nameUr: "رانا محمد خلیل احمد",
-      nameAr: "رانا محمد خليل أحمد",
-      designation: "General Secretary",
-      designationUr: "جنرل سیکرٹری",
-      designationAr: "الأمين العام",
-      phone: "0300-7837535",
-      specialization: "External Affairs & Social Services"
-    }
-  ];
 
   useEffect(() => {
-    const fetchTeachers = async () => {
+    const fetchStaff = async () => {
       try {
-        const q = query(collection(db, "users"), where("role", "==", "teacher"));
+        const q = query(collection(db, "staff"), where("status", "==", "active"));
         const snap = await getDocs(q);
-        setTeachers(snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
+        const allStaff = snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        
+        setLeadership(allStaff.filter(s => s.role === "leadership"));
+        setFaculty(allStaff.filter(s => s.role === "faculty" || s.role === "teacher"));
+        setStaff(allStaff.filter(s => s.role === "staff" || s.role === "admin"));
       } catch (err: any) {
-        console.error("Error fetching teachers", err);
-        setError("Failed to load teachers. Please check your connection.");
+        console.error("Error fetching staff", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchTeachers();
+    fetchStaff();
   }, []);
 
-  const getLocalizedName = (member: any) => {
-    if (locale === "ur" && member.nameUr) return member.nameUr;
-    if (locale === "ar" && member.nameAr) return member.nameAr;
-    return member.name || member.displayName || member.email;
-  };
-
-  const getLocalizedDesignation = (member: any) => {
-    if (locale === "ur" && member.designationUr) return member.designationUr;
-    if (locale === "ar" && member.designationAr) return member.designationAr;
-    return member.designation || "Faculty Member";
+  const getLocalized = (obj: any, field: string) => {
+    if (!obj || !obj[field]) return "";
+    return obj[field][locale] || obj[field]["ur"] || "";
   };
 
   const labels = {
     ur: {
+      title: "اساتذہ اور عملہ",
       leadership: "جامعہ کی قیادت",
       faculty: "تدریسی عملہ (اساتذہ)",
-      loading: "تدریسی عملے کی فہرست لوڈ ہو رہی ہے...",
-      noFaculty: "ابھی تک کوئی تدریسی عملہ درج نہیں کیا گیا۔",
-      specialization: "خاص مہارت"
+      staff: "انتظامی عملہ",
+      loading: "لوڈ ہو رہا ہے...",
+      noData: "کوئی ریکارڈ دستیاب نہیں۔",
+      designation: "عہدہ",
+      phone: "رابطہ نمبر",
+      joined: "تاریخ شمولیت"
     },
     ar: {
+      title: "المعلمون والموظفون",
       leadership: "قيادة الجامعة",
       faculty: "أعضاء هيئة التدريس",
-      loading: "جاري تحميل قائمة المعلمين...",
-      noFaculty: "لم يتم تسجيل أي أعضاء هيئة تدريس بعد.",
-      specialization: "التخصص"
+      staff: "الموظفون الإداريون",
+      loading: "جاري التحميل...",
+      noData: "لا توجد سجلات.",
+      designation: "المنصب",
+      phone: "رقم الهاتف",
+      joined: "تاريخ الانضمام"
     },
     en: {
-      leadership: "Jamia Leadership & Administration",
+      title: "Teachers & Staff",
+      leadership: "Leadership",
       faculty: "Faculty Members",
-      loading: "Loading faculty list...",
-      noFaculty: "No faculty members listed yet.",
-      specialization: "Specialization"
+      staff: "Administrative Staff",
+      loading: "Loading...",
+      noData: "No records available.",
+      designation: "Designation",
+      phone: "Phone",
+      joined: "Joined"
     }
-  }[locale] || {
-    leadership: "Jamia Leadership",
-    faculty: "Faculty Members",
-    loading: "Loading...",
-    noFaculty: "No faculty members listed yet.",
-    specialization: "Specialization"
+  }[locale];
+
+  const renderGrid = (members: any[]) => {
+    if (loading) return <p className={styles.loading}>{labels.loading}</p>;
+    if (members.length === 0) return <p className={styles.noData}>{labels.noData}</p>;
+
+    return (
+      <div className={styles.grid}>
+        {members.map(member => (
+          <div key={member.id} className={styles.card}>
+            <div className={styles.imageContainer}>
+              {member.photoUrl ? (
+                <img src={member.photoUrl} alt={getLocalized(member, "name")} className={styles.image} />
+              ) : (
+                <div className={styles.placeholder}>👤</div>
+              )}
+            </div>
+            <div className={styles.cardContent}>
+              <h3>{getLocalized(member, "name")}</h3>
+              <p className={styles.designation}>{getLocalized(member, "designation")}</p>
+              {member.phone && <p><strong>{labels.phone}:</strong> <a href={`tel:${member.phone}`}>{member.phone}</a></p>}
+              {member.joiningDate && <p><strong>{labels.joined}:</strong> {new Date(member.joiningDate).toLocaleDateString()}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
-    <main className={styles.aboutPage}>
+    <main className={styles.page}>
       <header className={styles.pageHeader}>
         <div className={styles.overlay}>
-          <h1>{locale === "ur" ? "اساتذہ اور عملہ" : locale === "ar" ? "المعلمون والموظفون" : "Teachers & Staff"}</h1>
+          <h1>{labels.title}</h1>
         </div>
       </header>
       
       <div className={styles.container}>
-        {/* Section 1: Leadership */}
-        <section className={styles.introSection} style={{ marginBottom: "3rem" }}>
-          <h2>{labels.leadership}</h2>
-          <div className={styles.missionVision}>
-            {defaultLeaders.map((leader, index) => (
-              <div key={index} className={styles.card}>
-                <h3>{getLocalizedName(leader)}</h3>
-                <p><strong>{getLocalizedDesignation(leader)}</strong></p>
-                <p>{labels.specialization}: {leader.specialization}</p>
-                <p>
-                  Contact: <a href={`tel:${leader.phone}`} style={{ color: "var(--primary-color)", fontWeight: "bold" }}>{leader.phone}</a>
-                </p>
-              </div>
-            ))}
-          </div>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>{labels.leadership}</h2>
+          {renderGrid(leadership)}
         </section>
 
-        {/* Section 2: General Faculty */}
-        <section className={styles.introSection}>
-          <h2>{labels.faculty}</h2>
-          {loading ? (
-            <p>{labels.loading}</p>
-          ) : (
-            <div className={styles.missionVision}>
-              {teachers.map(teacher => (
-                <div key={teacher.id} className={styles.card}>
-                  <h3>{getLocalizedName(teacher)}</h3>
-                  <p><strong>{getLocalizedDesignation(teacher)}</strong></p>
-                  {teacher.specialization && <p>{labels.specialization}: {teacher.specialization}</p>}
-                  <p>Department: {teacher.department || "General / Islamic Studies"}</p>
-                </div>
-              ))}
-              {!error && teachers.length === 0 && (
-                <div className={styles.card}>
-                  <p>{labels.noFaculty}</p>
-                </div>
-              )}
-            </div>
-          )}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>{labels.faculty}</h2>
+          {renderGrid(faculty)}
+        </section>
+
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>{labels.staff}</h2>
+          {renderGrid(staff)}
         </section>
       </div>
     </main>

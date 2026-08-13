@@ -7,6 +7,8 @@ import { db } from "@/lib/firebase/config";
 import { doc, getDoc, collection, getDocs, limit, query } from "firebase/firestore";
 import Hero from "@/components/public/Hero";
 import DepartmentsSection from "@/components/public/DepartmentsSection";
+import CoursesSection from "@/components/public/CoursesSection";
+import TeachersSection from "@/components/public/TeachersSection";
 import DonationStrip from "@/components/public/DonationStrip";
 import styles from "./page.module.css";
 
@@ -173,6 +175,12 @@ export default function HomePage() {
 
       {/* Departments Section */}
       {toggles.enableDepartments && <DepartmentsSection />}
+
+      {/* Courses Section */}
+      <CoursesSection />
+
+      {/* Teachers Section */}
+      <TeachersSection />
 
       {/* Announcements Section */}
       {toggles.enableAnnouncements && announcements.length > 0 && (
