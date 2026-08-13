@@ -34,12 +34,12 @@ export default function CoursesPage() {
     try {
       setLoading(true);
       // Fetch Departments
-      const deptSnapshot = await getDocs(query(collection(db, "departments"), orderBy("createdAt", "desc")));
+      const deptSnapshot = await getDocs(collection(db, "departments"));
       const deptData = deptSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Department));
       setDepartments(deptData);
 
       // Fetch Courses
-      const coursesSnapshot = await getDocs(query(collection(db, "courses"), orderBy("createdAt", "desc")));
+      const coursesSnapshot = await getDocs(collection(db, "courses"));
       const coursesData = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Course));
       setCourses(coursesData);
     } catch (error) {

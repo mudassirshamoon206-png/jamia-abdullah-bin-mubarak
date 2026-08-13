@@ -30,7 +30,7 @@ export default function AdmissionsPage() {
       const courseData = courseSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Course));
       setCourses(courseData);
 
-      const admissionsSnapshot = await getDocs(query(collection(db, "admissions"), orderBy("submittedAt", "desc")));
+      const admissionsSnapshot = await getDocs(collection(db, "admissions"));
       const admissionsData = admissionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Admission));
       
       setAdmissions(admissionsData);

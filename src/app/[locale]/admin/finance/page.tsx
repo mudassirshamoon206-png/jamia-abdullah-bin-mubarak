@@ -33,7 +33,7 @@ export default function FinanceDashboard() {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const q = query(collection(db, "salaryPayments"), orderBy("month", "desc"));
+      const q = collection(db, "salaryPayments");
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SalaryPayment));
       setPayments(data);

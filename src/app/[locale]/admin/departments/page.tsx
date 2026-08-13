@@ -33,7 +33,7 @@ export default function DepartmentsPage() {
   const fetchDepartments = async () => {
     try {
       setLoading(true);
-      const q = query(collection(db, "departments"), orderBy("createdAt", "desc"));
+      const q = collection(db, "departments");
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Department));
       setDepartments(data);

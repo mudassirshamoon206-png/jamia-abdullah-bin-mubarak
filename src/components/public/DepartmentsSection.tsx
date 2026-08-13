@@ -11,21 +11,17 @@ export default function DepartmentsSection() {
   const locale = useLocale() as "ur" | "ar" | "en";
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetch = async () => {
       try {
-        const timeoutPromise = new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000));
-        const data = await Promise.race([getDepartments(), timeoutPromise]) as Department[];
+        const data = await getDepartments();
         // Get active departments only for public facing
         setDepartments(data.filter((d: Department) => d.isActive));
       } catch (err: any) {
         console.error("Error fetching departments", err);
-        setError(err?.message?.includes("index") 
-          ? "Departments are loading. Please refresh the page."
-          : "Unable to load departments at this time. Please try again later."
-        );
+        // Show empty state — don't break the page with an error message
+        setDepartments([]);
       } finally {
         setLoading(false);
       }
@@ -40,8 +36,6 @@ export default function DepartmentsSection() {
         
         {loading ? (
           <p className={styles.loadingText}>Loading...</p>
-        ) : error ? (
-          <p style={{color: 'red', textAlign: 'center'}}>{error}</p>
         ) : departments.length === 0 ? (
           <p style={{textAlign: 'center', color: 'var(--text-dark)', opacity: 0.7, padding: '2rem 0'}}>
             {locale === "ur" ? "ابھی تک کوئی شعبہ دستیاب نہیں۔" : locale === "ar" ? "لا توجد أقسام متاحة في الوقت الحالي." : "No departments available at the moment."}

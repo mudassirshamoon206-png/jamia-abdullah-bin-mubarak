@@ -144,11 +144,6 @@ export default function TeachersPage() {
                   <p>Department: {teacher.department || "General / Islamic Studies"}</p>
                 </div>
               ))}
-              {error && (
-                <div className={styles.card} style={{ borderColor: 'red' }}>
-                  <p style={{ color: 'red' }}>{error}</p>
-                </div>
-              )}
               {!error && teachers.length === 0 && (
                 <div className={styles.card}>
                   <p>{labels.noFaculty}</p>

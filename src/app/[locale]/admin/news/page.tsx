@@ -32,7 +32,7 @@ export default function NewsPage() {
   const fetchNews = async () => {
     try {
       setLoading(true);
-      const q = query(collection(db, "news"), orderBy("date", "desc"));
+      const q = collection(db, "news");
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as News));
       setNews(data);

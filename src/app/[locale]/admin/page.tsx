@@ -25,7 +25,7 @@ export default function AdminDashboard() {
           getDocs(query(collection(db, "users"), where("role", "==", "teacher"))),
           getDocs(collection(db, "departments")),
           getDocs(collection(db, "courses")),
-          getDocs(query(collection(db, "admissions"), orderBy("submittedAt", "desc"), limit(4)))
+          getDocs(collection(db, "admissions"))
         ]);
 
         setStats({

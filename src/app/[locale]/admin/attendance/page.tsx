@@ -34,7 +34,7 @@ export default function AttendancePage() {
   const fetchAttendance = async () => {
     try {
       setLoading(true);
-      const q = query(collection(db, "attendance"), orderBy("date", "desc"));
+      const q = collection(db, "attendance");
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Attendance));
       setAttendanceRecords(data);

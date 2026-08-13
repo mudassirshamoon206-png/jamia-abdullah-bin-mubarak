@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getDocs, collection, query, orderBy } from "firebase/firestore";
+import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { useLocale } from "next-intl";
 import styles from "../about/page.module.css";
@@ -10,17 +10,22 @@ export default function EventsPage() {
   const locale = useLocale();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
-        const snap = await getDocs(q);
-        setEvents(snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
+        // No orderBy — avoids composite index requirement. Sort client-side.
+        const snap = await getDocs(collection(db, "events"));
+        const items = snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        items.sort((a: any, b: any) => {
+          const aTime = a.createdAt?.seconds ?? 0;
+          const bTime = b.createdAt?.seconds ?? 0;
+          return bTime - aTime;
+        });
+        setEvents(items);
       } catch (err: any) {
         console.error("Error fetching events", err);
-        setError("Failed to load events. Please try again later.");
+        setEvents([]);
       } finally {
         setLoading(false);
       }
@@ -68,6 +73,11 @@ export default function EventsPage() {
           <div className={styles.introSection}><p>{loadingText}</p></div>
         ) : (
           <div className={styles.missionVision}>
+            {events.length === 0 && (
+              <div className={styles.card}>
+                <p>{emptyText}</p>
+              </div>
+            )}
             {events.map(item => (
               <div key={item.id} className={styles.card}>
                 <h3>{getTitle(item)}</h3>
@@ -82,16 +92,6 @@ export default function EventsPage() {
                 <p>{getDescription(item)}</p>
               </div>
             ))}
-            {error && (
-              <div className={styles.card} style={{ borderColor: "red" }}>
-                <p style={{ color: "red" }}>{error}</p>
-              </div>
-            )}
-            {!error && events.length === 0 && (
-              <div className={styles.card}>
-                <p>{emptyText}</p>
-              </div>
-            )}
           </div>
         )}
       </div>

@@ -34,7 +34,7 @@ export default function EventsPage() {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const q = query(collection(db, "events"), orderBy("date", "desc"));
+      const q = collection(db, "events");
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as EventItem));
       setEvents(data);

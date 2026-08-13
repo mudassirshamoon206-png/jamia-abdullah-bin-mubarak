@@ -32,7 +32,7 @@ export default function GalleryPage() {
   const fetchGallery = async () => {
     try {
       setLoading(true);
-      const q = query(collection(db, "gallery"), orderBy("createdAt", "desc"));
+      const q = collection(db, "gallery");
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as GalleryItem));
       setItems(data);

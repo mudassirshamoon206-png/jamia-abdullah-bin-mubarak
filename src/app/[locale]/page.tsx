@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { db } from "@/lib/firebase/config";
-import { doc, getDoc, collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, limit, query } from "firebase/firestore";
 import Hero from "@/components/public/Hero";
 import DepartmentsSection from "@/components/public/DepartmentsSection";
 import DonationStrip from "@/components/public/DonationStrip";
@@ -69,19 +69,26 @@ export default function HomePage() {
           setContactInfo(contactSnap.data());
         }
 
-        // 4. Fetch dynamic content lists
+        // 4. Fetch dynamic content — NO orderBy to avoid index requirements, sort client-side
         const [announceSnap, newsSnap, gallerySnap] = await Promise.all([
-          getDocs(query(collection(db, "announcements"), orderBy("createdAt", "desc"), limit(3))),
-          getDocs(query(collection(db, "news"), orderBy("createdAt", "desc"), limit(3))),
-          getDocs(query(collection(db, "gallery"), orderBy("createdAt", "desc"), limit(4)))
+          getDocs(collection(db, "announcements")),
+          getDocs(collection(db, "news")),
+          getDocs(collection(db, "gallery"))
         ]);
 
-        setAnnouncements(announceSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        setNewsList(newsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        setGalleryImages(gallerySnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        const sortByDate = (docs: any[]) =>
+          docs
+            .map(d => ({ id: d.id, ...d.data() }))
+            .sort((a: any, b: any) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0))
+            .slice(0, 4);
+
+        setAnnouncements(sortByDate(announceSnap.docs).slice(0, 3));
+        setNewsList(sortByDate(newsSnap.docs).slice(0, 3));
+        setGalleryImages(sortByDate(gallerySnap.docs).slice(0, 4));
 
       } catch (err) {
         console.error("Error loading homepage CMS details:", err);
+        // Graceful failure — page still renders with defaults/static content
       } finally {
         setLoading(false);
       }
@@ -161,12 +168,11 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Donation Support Strip — placed after About, before Departments for max visibility */}
+      {/* Donation Support Strip */}
       {toggles.enableDonations && <DonationStrip />}
 
       {/* Departments Section */}
       {toggles.enableDepartments && <DepartmentsSection />}
-
 
       {/* Announcements Section */}
       {toggles.enableAnnouncements && announcements.length > 0 && (
@@ -222,8 +228,6 @@ export default function HomePage() {
           </div>
         </section>
       )}
-
-
 
       {/* Contact Section */}
       {toggles.enableContact && contactInfo && (

@@ -38,10 +38,12 @@ export default function StudentDashboard() {
           enrolledCourses = userData.courses?.length || 0;
         }
 
-        // Fetch Announcements
-        const newsQuery = query(collection(db, "news"), orderBy("date", "desc"), limit(3));
-        const newsSnap = await getDocs(newsQuery);
-        const fetchedNews = newsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Fetch Announcements (client side sorting)
+        const newsSnap = await getDocs(collection(db, "news"));
+        const fetchedNews = newsSnap.docs
+          .map(doc => ({ id: doc.id, ...doc.data() as any }))
+          .sort((a, b) => (b.date?.localeCompare(a.date) || 0))
+          .slice(0, 3);
 
         setStats({ attendance: attPercentage, courses: enrolledCourses });
         setAnnouncements(fetchedNews);
