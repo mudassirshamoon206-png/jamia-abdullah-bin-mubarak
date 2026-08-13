@@ -2,6 +2,10 @@
 # Jamia Abdullah Bin Mubarak Portal — .gitignore
 # ============================================================
 
+# ── Local push helpers (may contain credentials) ────────────
+dopush.bat
+*.bat
+
 # ── Node / npm ──────────────────────────────────────────────
 node_modules/
 npm-debug.log*
