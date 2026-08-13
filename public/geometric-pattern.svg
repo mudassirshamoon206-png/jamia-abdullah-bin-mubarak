@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <defs>
+    <pattern id="geo" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <polygon points="40,0 80,20 80,60 40,80 0,60 0,20" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <polygon points="40,10 70,25 70,55 40,70 10,55 10,25" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+      <circle cx="40" cy="40" r="4" fill="rgba(212,175,55,0.15)"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="400" fill="url(#geo)"/>
+</svg>
