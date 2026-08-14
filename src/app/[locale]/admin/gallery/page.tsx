@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { collection, getDocs, addDoc, deleteDoc, doc, orderBy, query } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { ref, uploadBytes, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "@/lib/firebase/config";
 import styles from "../crud.module.css";
 
@@ -19,6 +19,7 @@ export default function GalleryPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   
   const [formData, setFormData] = useState<{ title: string; image: File | null }>({
     title: "",
@@ -59,28 +60,51 @@ export default function GalleryPage() {
 
     try {
       setUploading(true);
+      setProgress(0);
       
       const arrayBuffer = await formData.image.arrayBuffer();
       const imagePath = `gallery/${Date.now()}_${formData.image.name}`;
       const imageRef = ref(storage, imagePath);
-      await uploadBytes(imageRef, arrayBuffer, { contentType: formData.image.type });
-      const imageUrl = await getDownloadURL(imageRef);
+      
+      const uploadTask = uploadBytesResumable(imageRef, arrayBuffer, { contentType: formData.image.type });
 
-      // Save to Firestore
-      await addDoc(collection(db, "gallery"), {
-        title: formData.title,
-        imageUrl,
-        imagePath,
-        createdAt: new Date().toISOString()
-      });
+      uploadTask.on(
+        "state_changed",
+        (snapshot: any) => {
+          const prog = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setProgress(prog);
+        },
+        (error: any) => {
+          console.error("Upload failed", error);
+          alert("Error uploading file: " + error.message);
+          setUploading(false);
+        },
+        async () => {
+          try {
+            const imageUrl = await getDownloadURL(imageRef);
 
-      alert("File uploaded successfully!");
-      setIsModalOpen(false);
-      fetchGallery();
+            // Save to Firestore
+            await addDoc(collection(db, "gallery"), {
+              title: formData.title,
+              imageUrl,
+              imagePath,
+              createdAt: new Date().toISOString()
+            });
+
+            alert("File uploaded successfully!");
+            setIsModalOpen(false);
+            fetchGallery();
+          } catch (firestoreError: any) {
+             alert("Error saving data: " + firestoreError.message);
+          } finally {
+            setUploading(false);
+            setProgress(0);
+          }
+        }
+      );
     } catch (error: any) {
-      console.error("Error uploading image:", error);
-      alert("Error uploading file: " + error.message);
-    } finally {
+      console.error("Error preparing upload:", error);
+      alert("Error preparing upload: " + error.message);
       setUploading(false);
     }
   };
@@ -193,7 +217,7 @@ export default function GalleryPage() {
               <div className={styles.modalActions}>
                 <button type="button" onClick={() => setIsModalOpen(false)} className={styles.cancelButton} disabled={uploading}>Cancel</button>
                 <button type="submit" className={styles.submitButton} disabled={uploading}>
-                  {uploading ? "Uploading..." : "Upload"}
+                  {uploading ? `Uploading... ${Math.round(progress)}%` : "Upload"}
                 </button>
               </div>
             </form>
