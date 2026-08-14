@@ -43,42 +43,61 @@ export default function MediaLibrary() {
     fetchMedia();
   }, []);
 
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploading(true);
-    const storageRef = ref(storage, `media/${Date.now()}_${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const storageRef = ref(storage, `media/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, arrayBuffer, { contentType: file.type });
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const prog = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(prog);
-      },
-      (error) => {
-        console.error("Upload failed", error);
-        setUploading(false);
-      },
-      () => {
-        setUploading(false);
-        setProgress(0);
-        fetchMedia(); // Refresh list
-      }
-    );
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const prog = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setProgress(prog);
+        },
+        (error) => {
+          console.error("Upload failed", error);
+          alert("Upload failed: " + error.message);
+          setUploading(false);
+          setProgress(0);
+        },
+        () => {
+          setUploading(false);
+          setProgress(0);
+          alert("File uploaded successfully!");
+          fetchMedia(); // Refresh list
+        }
+      );
+    } catch (err: any) {
+      console.error("Error during upload preparation", err);
+      alert("Error preparing upload: " + err.message);
+      setUploading(false);
+      setProgress(0);
+    }
   };
 
   const handleDelete = async (path: string) => {
-    if (confirm("Are you sure you want to delete this image?")) {
+    if (confirm("Are you sure you want to delete this file?")) {
       try {
         const fileRef = ref(storage, path);
         await deleteObject(fileRef);
+        alert("File deleted successfully!");
         fetchMedia();
-      } catch (error) {
+      } catch (error: any) {
         console.error("Delete failed", error);
+        alert("Delete failed: " + error.message);
       }
     }
+  };
+
+  // Helper to determine if media is a video
+  const isVideo = (name: string) => {
+    const ext = name.split('.').pop()?.toLowerCase();
+    return ext === 'mp4' || ext === 'mov' || ext === 'webm';
   };
 
   return (
@@ -87,8 +106,13 @@ export default function MediaLibrary() {
         <h2>Media Library</h2>
         <div className={styles.uploadSection}>
           <label className={styles.uploadBtn}>
-            Upload Image
-            <input type="file" hidden accept="image/*" onChange={handleUpload} />
+            Upload File
+            <input 
+              type="file" 
+              hidden 
+              accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" 
+              onChange={handleUpload} 
+            />
           </label>
           {uploading && <span className={styles.progressText}>Uploading... {Math.round(progress)}%</span>}
         </div>
@@ -100,7 +124,11 @@ export default function MediaLibrary() {
         <div className={styles.mediaGrid}>
           {mediaList.map((item) => (
             <div key={item.path} className={styles.mediaCard}>
-              <img src={item.url} alt={item.name} className={styles.mediaImage} />
+              {isVideo(item.name) ? (
+                <video src={item.url} className={styles.mediaImage} controls preload="metadata" />
+              ) : (
+                <img src={item.url} alt={item.name} className={styles.mediaImage} />
+              )}
               <div className={styles.mediaActions}>
                 <span className={styles.mediaName} title={item.name}>{item.name}</span>
                 <button className={styles.deleteBtn} onClick={() => handleDelete(item.path)}>Delete</button>

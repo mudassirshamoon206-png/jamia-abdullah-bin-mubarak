@@ -60,10 +60,10 @@ export default function GalleryPage() {
     try {
       setUploading(true);
       
-      // Upload image to Storage
+      const arrayBuffer = await formData.image.arrayBuffer();
       const imagePath = `gallery/${Date.now()}_${formData.image.name}`;
       const imageRef = ref(storage, imagePath);
-      await uploadBytes(imageRef, formData.image);
+      await uploadBytes(imageRef, arrayBuffer, { contentType: formData.image.type });
       const imageUrl = await getDownloadURL(imageRef);
 
       // Save to Firestore
@@ -74,17 +74,19 @@ export default function GalleryPage() {
         createdAt: new Date().toISOString()
       });
 
+      alert("File uploaded successfully!");
       setIsModalOpen(false);
       fetchGallery();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading image:", error);
+      alert("Error uploading file: " + error.message);
     } finally {
       setUploading(false);
     }
   };
 
   const handleDelete = async (item: GalleryItem) => {
-    if (confirm("Are you sure you want to delete this image?")) {
+    if (confirm("Are you sure you want to delete this item?")) {
       try {
         // Delete from Firestore
         await deleteDoc(doc(db, "gallery", item.id));
@@ -99,9 +101,11 @@ export default function GalleryPage() {
           }
         }
 
+        alert("Item deleted successfully!");
         fetchGallery();
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error deleting gallery item:", error);
+        alert("Error deleting item: " + error.message);
       }
     }
   };
@@ -114,11 +118,17 @@ export default function GalleryPage() {
     setIsModalOpen(true);
   };
 
+  // Helper to determine if media is a video
+  const isVideo = (path: string) => {
+    const ext = path.split('.').pop()?.toLowerCase();
+    return ext === 'mp4' || ext === 'mov' || ext === 'webm';
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Gallery Management</h1>
-        <button onClick={openAddModal} className={styles.addButton}>Add Image</button>
+        <button onClick={openAddModal} className={styles.addButton}>Add Media</button>
       </div>
 
       {loading ? (
@@ -128,7 +138,7 @@ export default function GalleryPage() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Image</th>
+                <th>Media</th>
                 <th>Title</th>
                 <th>Date Added</th>
                 <th>Actions</th>
@@ -138,7 +148,11 @@ export default function GalleryPage() {
               {items.map(item => (
                 <tr key={item.id}>
                   <td>
-                    <img src={item.imageUrl} alt={item.title} className={styles.photoPreview} style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} />
+                    {isVideo(item.imagePath) ? (
+                      <video src={item.imageUrl} style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} preload="metadata" />
+                    ) : (
+                      <img src={item.imageUrl} alt={item.title} className={styles.photoPreview} style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} />
+                    )}
                   </td>
                   <td>{item.title}</td>
                   <td>{new Date(item.createdAt).toLocaleDateString()}</td>
@@ -160,15 +174,20 @@ export default function GalleryPage() {
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <h2 className={styles.modalTitle}>Add New Image</h2>
+            <h2 className={styles.modalTitle}>Add New Media</h2>
             <form onSubmit={handleSubmit}>
               <div className={styles.formGroup}>
                 <label>Title</label>
                 <input type="text" name="title" value={formData.title} onChange={handleInputChange} required />
               </div>
               <div className={styles.formGroup}>
-                <label>Image File</label>
-                <input type="file" accept="image/*" onChange={handleFileChange} required />
+                <label>Media File</label>
+                <input 
+                  type="file" 
+                  accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" 
+                  onChange={handleFileChange} 
+                  required 
+                />
               </div>
               
               <div className={styles.modalActions}>
