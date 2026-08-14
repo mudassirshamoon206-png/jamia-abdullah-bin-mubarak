@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, Timestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "@/lib/firebase/config";
+import { uploadMediaFile } from "@/lib/uploadMedia";
 import { Department } from "@/lib/firebase/firestore";
 import styles from "../crud.module.css";
 import { useTranslations } from "next-intl";
@@ -60,13 +61,11 @@ export default function DepartmentsPage() {
 
     try {
       setUploading(true);
-      const storageRef = ref(storage, `departments/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
+      const downloadURL = await uploadMediaFile(file, "departments");
       setFormData(prev => ({ ...prev, imagePath: downloadURL }));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading image:", error);
-      alert("Error uploading image");
+      alert(error.message || "Error uploading image");
     } finally {
       setUploading(false);
     }

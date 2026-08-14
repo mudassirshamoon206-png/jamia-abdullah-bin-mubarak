@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { collection, getDocs, addDoc, deleteDoc, doc, orderBy, query } from "firebase/firestore";
-import { ref, uploadBytes, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "@/lib/firebase/config";
+import { uploadMediaFile } from "@/lib/uploadMedia";
 import styles from "../crud.module.css";
 
 type GalleryItem = {
@@ -62,49 +63,26 @@ export default function GalleryPage() {
       setUploading(true);
       setProgress(0);
       
-      const arrayBuffer = await formData.image.arrayBuffer();
-      const imagePath = `gallery/${Date.now()}_${formData.image.name}`;
-      const imageRef = ref(storage, imagePath);
-      
-      const uploadTask = uploadBytesResumable(imageRef, arrayBuffer, { contentType: formData.image.type });
-
-      uploadTask.on(
-        "state_changed",
-        (snapshot: any) => {
-          const prog = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setProgress(prog);
-        },
-        (error: any) => {
-          console.error("Upload failed", error);
-          alert("Error uploading file: " + error.message);
-          setUploading(false);
-        },
-        async () => {
-          try {
-            const imageUrl = await getDownloadURL(imageRef);
-
-            // Save to Firestore
-            await addDoc(collection(db, "gallery"), {
-              title: formData.title,
-              imageUrl,
-              imagePath,
-              createdAt: new Date().toISOString()
-            });
-
-            alert("File uploaded successfully!");
-            setIsModalOpen(false);
-            fetchGallery();
-          } catch (firestoreError: any) {
-             alert("Error saving data: " + firestoreError.message);
-          } finally {
-            setUploading(false);
-            setProgress(0);
-          }
-        }
+      const downloadURL = await uploadMediaFile(
+        formData.image,
+        "gallery",
+        (prog) => setProgress(prog)
       );
+
+      await addDoc(collection(db, "gallery"), {
+        title: formData.title,
+        imageUrl: downloadURL,
+        imagePath: downloadURL,
+        createdAt: new Date().toISOString(),
+      });
+
+      setFormData({ title: "", image: null });
+      setIsModalOpen(false);
+      fetchGallery();
     } catch (error: any) {
-      console.error("Error preparing upload:", error);
-      alert("Error preparing upload: " + error.message);
+      console.error("Upload failed", error);
+      alert(error.message || "Error uploading file");
+    } finally {
       setUploading(false);
     }
   };

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ref, uploadBytesResumable, getDownloadURL, listAll, deleteObject } from "firebase/storage";
 import { storage } from "@/lib/firebase/config";
+import { uploadMediaFile } from "@/lib/uploadMedia";
 import styles from "./page.module.css";
 
 interface MediaItem {
@@ -48,35 +49,22 @@ export default function MediaLibrary() {
     if (!file) return;
 
     setUploading(true);
+    setProgress(0);
     try {
-      const arrayBuffer = await file.arrayBuffer();
-      const storageRef = ref(storage, `media/${Date.now()}_${file.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, arrayBuffer, { contentType: file.type });
-
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const prog = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setProgress(prog);
-        },
-        (error) => {
-          console.error("Upload failed", error);
-          alert("Upload failed: " + error.message);
-          setUploading(false);
-          setProgress(0);
-        },
-        () => {
-          setUploading(false);
-          setProgress(0);
-          alert("File uploaded successfully!");
-          fetchMedia(); // Refresh list
-        }
+      await uploadMediaFile(
+        file,
+        "media",
+        (prog) => setProgress(prog)
       );
+      alert("File uploaded successfully!");
+      fetchMedia();
     } catch (err: any) {
-      console.error("Error during upload preparation", err);
-      alert("Error preparing upload: " + err.message);
+      console.error("Upload failed", err);
+      alert(err.message || "Error uploading file");
+    } finally {
       setUploading(false);
       setProgress(0);
+      e.target.value = ""; // Reset input
     }
   };
 
