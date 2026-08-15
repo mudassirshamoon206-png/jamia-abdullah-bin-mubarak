@@ -191,8 +191,8 @@ export default function HomePage() {
               {announcements.map((ann) => (
                 <div key={ann.id} className={styles.annCard}>
                   <span className={styles.annDate}>{new Date(ann.createdAt?.seconds * 1000 || Date.now()).toLocaleDateString()}</span>
-                  <h3>{locale === "ur" ? ann.titleUr : locale === "ar" ? ann.titleAr : ann.titleEn || ann.title}</h3>
-                  <p>{locale === "ur" ? ann.contentUr : locale === "ar" ? ann.contentAr : ann.contentEn || ann.content}</p>
+                  <h3>{(locale === "ur" ? ann.titleUr : locale === "ar" ? ann.titleAr : ann.titleEn) || ann.title}</h3>
+                  <p>{(locale === "ur" ? ann.contentUr : locale === "ar" ? ann.contentAr : ann.contentEn) || ann.content}</p>
                 </div>
               ))}
             </div>
@@ -211,8 +211,8 @@ export default function HomePage() {
                   {news.imageUrl && <img src={news.imageUrl} alt={news.title} className={styles.newsImage} />}
                   <div className={styles.newsContent}>
                     <span className={styles.newsDate}>{new Date(news.createdAt?.seconds * 1000 || Date.now()).toLocaleDateString()}</span>
-                    <h3>{locale === "ur" ? news.titleUr : locale === "ar" ? news.titleAr : news.titleEn || news.title}</h3>
-                    <p>{locale === "ur" ? news.descUr : locale === "ar" ? news.descAr : news.descEn || news.description}</p>
+                    <h3>{(locale === "ur" ? news.titleUr : locale === "ar" ? news.titleAr : news.titleEn) || news.title}</h3>
+                    <p>{(locale === "ur" ? news.descUr : locale === "ar" ? news.descAr : news.descEn) || news.description || news.content}</p>
                   </div>
                 </div>
               ))}

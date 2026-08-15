@@ -6,6 +6,9 @@ import { AuthProvider } from '@/context/AuthContext';
 import PublicLayout from '@/components/public/PublicLayout';
 import '../globals.css';
  
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function LocaleLayout({
   children,
   params

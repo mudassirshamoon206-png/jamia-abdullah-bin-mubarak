@@ -33,15 +33,11 @@ export default function EventsPage() {
   }, []);
 
   const getTitle = (item: any) => {
-    if (locale === "ur" && item.titleUr) return item.titleUr;
-    if (locale === "ar" && item.titleAr) return item.titleAr;
-    return item.titleEn || item.title || "";
+    return (locale === "ur" ? item.titleUr : locale === "ar" ? item.titleAr : item.titleEn) || item.title || "";
   };
 
   const getContent = (item: any) => {
-    if (locale === "ur" && item.descUr) return item.descUr;
-    if (locale === "ar" && item.descAr) return item.descAr;
-    return item.descEn || item.description || "";
+    return (locale === "ur" ? item.descUr : locale === "ar" ? item.descAr : item.descEn) || item.description || item.content || "";
   };
 
   const pageTitle =
